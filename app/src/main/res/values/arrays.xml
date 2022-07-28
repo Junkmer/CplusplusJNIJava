@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="nativeMethod">
+        <item>传参类型：int/long/short</item>
+        <item>传参类型：char</item>
+        <item>传参类型：string</item>
+        <item>传参类型：int[]/string[]</item>
+        <item>传参类型：对象</item>
+        <item>传参类型：List-整型</item>
+        <item>传参类型：List-String</item>
+        <item>传参类型：List-int[]</item>
+        <item>传参类型：List-Object-</item>
+        <item>传参类型：Map-整型-</item>
+        <item>传参类型：Map-String-</item>
+        <item>传参类型：Map-int[]-</item>
+        <item>传参类型：Map-Object-</item>
+        <item>传参类型：集合嵌套集合</item>
+        <item>传参类型：Map嵌套Map</item>
+    </string-array>
+</resources>

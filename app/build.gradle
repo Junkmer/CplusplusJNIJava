@@ -36,6 +36,7 @@ android {
             version '3.18.1'
         }
     }
+
     buildFeatures {
         viewBinding true
     }

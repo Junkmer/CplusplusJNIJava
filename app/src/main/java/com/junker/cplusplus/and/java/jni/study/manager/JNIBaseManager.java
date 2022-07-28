@@ -1,15 +1,30 @@
 package com.junker.cplusplus.and.java.jni.study.manager;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.List;
 import java.util.Map;
 
-public class JavaNativeMethod {
-    private static final String TAG = JavaNativeMethod.class.getSimpleName();
+public class JNIBaseManager {
+    private static final String TAG = JNIBaseManager.class.getSimpleName();
 
     private static boolean sIsLoadLibrarySuccess = false;
+
+    private int num;
+    private char ch;
+    private String str;
+    private int[] numS;
+    private Object obj;
+    private List<Integer> list;
+    private List<String> mapInt;
+    private List<int[]> listIntArray;
+    private List<Object> listObject;
+    private Map<Integer,Integer> mapInteger;
+    private Map<String,String> mapString;
+    private Map<Integer,int[]> mapIntegerArray;
+    private Map<Integer,Object> mapObject;
+    private List<List<Object>> listList;
+    private Map<Integer,Map<Integer,Object>> mapMap;
 
     static {
         try {
@@ -38,11 +53,11 @@ public class JavaNativeMethod {
     }
 
     private static class JavaNativeMethodHolder {
-        private static final JavaNativeMethod nativeMethod = new JavaNativeMethod();
+        private static final JNIBaseManager nativeMethod = new JNIBaseManager();
     }
 
-    public static JavaNativeMethod getInstance() {
-        return JavaNativeMethod.JavaNativeMethodHolder.nativeMethod;
+    public static JNIBaseManager getInstance() {
+        return JNIBaseManager.JavaNativeMethodHolder.nativeMethod;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,41 +108,41 @@ public class JavaNativeMethod {
     /**
      * 传参类型：集合-List<int[]>
      */
-    public native List<int[]> listIntArrayFromJNI(List<int[]>);
+    public native List<int[]> listIntArrayFromJNI(List<int[]> listIntArray);
 
     /**
      * 传参类型：集合-List<Object>
      */
-    public native List<Object> listObjectFromJNI(List<Object>);
+    public native List<Object> listObjectFromJNI(List<Object> listObject);
 
     /**
      * 传参类型：Map数组-Map<整型>
      */
-    public native Map<Integer,Integer> mapIntegerFromJNI(Map<Integer,Integer>);
+    public native Map<Integer,Integer> mapIntegerFromJNI(Map<Integer,Integer> mapInteger);
 
     /**
      * 传参类型：Map数组-Map<String>
      */
-    public native Map<String,String> mapStringFromJNI(Map<String,String>);
+    public native Map<String,String> mapStringFromJNI(Map<String,String> mapString);
 
     /**
      * 传参类型：Map数组-Map<int[]>
      */
-    public native Map<Integer,int[]> mapIntgerFromJNI(Map<Integer,int[]>);
+    public native Map<Integer,int[]> mapIntegerArrayFromJNI(Map<Integer,int[]> mapIntegerArray);
 
     /**
      * 传参类型：Map数组-Map<Object>
      */
-    public native Map<Integer,Object> mapObjectFromJNI(Map<Integer,Object>);
+    public native Map<Integer,Object> mapObjectFromJNI(Map<Integer,Object> mapObject);
 
     /**
      * 传参类型：集合嵌套集合-List<List>
      */
-    public native List<List<Object>> listListFromJNI(List<List<Object>>);
+    public native List<List<Object>> listListFromJNI(List<List<Object>> listList);
 
     /**
      * 传参类型：Map嵌套Map-Map<Map>
      */
-    public native Map<Integer,Map<Integer,Object>> mapMapFromJNI(Map<Integer,Map<Integer,Object>>);
+    public native Map<Integer,Map<Integer,Object>> mapMapFromJNI(Map<Integer,Map<Integer,Object>> mapMap);
 
 }
