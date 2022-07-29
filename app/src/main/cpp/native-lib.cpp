@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <string>
+#include <iostream>
 
 extern "C"
 JNIEXPORT jstring JNICALL
@@ -56,21 +57,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_stringFromJN
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应的变量 fieldId
-    env->GetFieldID(jclazz, "str", "Ljava/lang/String;");
+    jfieldID fid = env->GetFieldID(jclazz, "str", "Ljava/lang/String;");
     //将传入的参数 str 赋值给 thiz 实例对象中 fieldId 对应的变量
-    std::string hello = "";
-    if (str) {
-        int size = env->GetStringUTFLength(str);
+    env->SetObjectField(thiz,fid,str);
+    //获取 thiz 对象中fieldId对应的对象
+    jstring jstr = static_cast<jstring>(env->GetObjectField(thiz,fid));
+    if (jstr) {
+
+        //获取 jstr对象的值，并传回给 java层
+        int size = env->GetStringUTFLength(jstr);
         const char *value = env->GetStringUTFChars(str, nullptr);
         std::string result(value, size);
+        std::cout<< "result[%s] = " << result.c_str() << std::endl;
 
-        env->ReleaseStringChars(str, reinterpret_cast<const jchar *>(value));
-        env->DeleteLocalRef(str);
+        env->ReleaseStringChars(jstr, reinterpret_cast<const jchar *>(value));
+        env->DeleteLocalRef(jstr);
 
-        hello = result;
-
+        return env->NewStringUTF(result.c_str());
     }
-    return env->NewStringUTF(hello.c_str());
+    return env->NewStringUTF("");
 }
 
 /**
@@ -81,6 +86,8 @@ JNIEXPORT jintArray JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_intArrayFromJNI(JNIEnv *env, jobject thiz, jintArray numS) {
     jclass jclazz = env->GetObjectClass(thiz);
     jfieldID fid = env->GetFieldID(jclazz, "numS", "[I");
+    jintArray intArr = static_cast<jintArray>(env->GetObjectClass(thiz,fid));
+
     // 将传入的参数 numS 赋值给 thiz 实例对象中 fieldId 对应的变量
     jint len = 0, sum = 0;
     jint *arr = env->GetIntArrayElements(numS, 0);
