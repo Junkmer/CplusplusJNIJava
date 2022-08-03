@@ -2,6 +2,8 @@ package com.junker.cplusplus.and.java.jni.study.manager;
 
 import android.util.Log;
 
+import com.junker.cplusplus.and.java.jni.study.bean.DataBean;
+
 import java.util.List;
 import java.util.Map;
 
@@ -14,17 +16,17 @@ public class JNIBaseManager {
     private char ch;
     private String str;
     private int[] numS;
-    private Object obj;
+    private DataBean bean;
     private List<Integer> list;
-    private List<String> mapInt;
+    private List<String> listString;
     private List<int[]> listIntArray;
-    private List<Object> listObject;
+    private List<DataBean> listObject;
     private Map<Integer,Integer> mapInteger;
     private Map<String,String> mapString;
     private Map<Integer,int[]> mapIntegerArray;
-    private Map<Integer,Object> mapObject;
-    private List<List<Object>> listList;
-    private Map<Integer,Map<Integer,Object>> mapMap;
+    private Map<Integer,DataBean> mapObject;
+    private List<List<DataBean>> listList;
+    private Map<Integer,Map<Integer,DataBean>> mapMap;
 
     static {
         try {
@@ -93,7 +95,7 @@ public class JNIBaseManager {
     /**
      * 传参类型：对象
      */
-    public native Object objectFromJNI(Object obj);
+    public native DataBean objectFromJNI(DataBean obj);
 
     /**
      * 传参类型：集合-List<整型>
@@ -103,7 +105,7 @@ public class JNIBaseManager {
     /**
      * 传参类型：集合-List<String>
      */
-    public native List<String> listStringFromJNI(List<String> mapInt);
+    public native List<String> listStringFromJNI(List<String> listString);
 
     /**
      * 传参类型：集合-List<int[]>
@@ -113,7 +115,7 @@ public class JNIBaseManager {
     /**
      * 传参类型：集合-List<Object>
      */
-    public native List<Object> listObjectFromJNI(List<Object> listObject);
+    public native List<Object> listObjectFromJNI(List<DataBean> listObject);
 
     /**
      * 传参类型：Map数组-Map<整型>

@@ -59,23 +59,22 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_stringFromJN
     //通过 jclazz 获取对应的变量 fieldId
     jfieldID fid = env->GetFieldID(jclazz, "str", "Ljava/lang/String;");
     //将传入的参数 str 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,str);
+    env->SetObjectField(thiz, fid, str);
     //获取 thiz 对象中fieldId对应的对象
-    jstring jstr = static_cast<jstring>(env->GetObjectField(thiz,fid));
-    if (jstr) {
-
-        //获取 jstr对象的值，并传回给 java层
-        int size = env->GetStringUTFLength(jstr);
-        const char *value = env->GetStringUTFChars(str, nullptr);
-        std::string result(value, size);
-        std::cout<< "result[%s] = " << result.c_str() << std::endl;
-
-        env->ReleaseStringChars(jstr, reinterpret_cast<const jchar *>(value));
-        env->DeleteLocalRef(jstr);
-
-        return env->NewStringUTF(result.c_str());
-    }
-    return env->NewStringUTF("");
+    jstring jstr = static_cast<jstring>(env->GetObjectField(thiz, fid));
+//    if (jstr) {
+//        //获取 jstr对象的值，并传回给 java层
+//        int size = env->GetStringUTFLength(jstr);
+//        const char *value = env->GetStringUTFChars(str, nullptr);
+//        std::string result(value, size);
+//        std::cout << "result[%s] = " << result.c_str() << std::endl;
+//
+//        env->ReleaseStringChars(jstr, reinterpret_cast<const jchar *>(value));
+//        env->DeleteLocalRef(jstr);
+//
+//        return env->NewStringUTF(result.c_str());
+//    }
+    return jstr;
 }
 
 /**
@@ -84,24 +83,36 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_stringFromJN
 extern "C"
 JNIEXPORT jintArray JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_intArrayFromJNI(JNIEnv *env, jobject thiz, jintArray numS) {
+    //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应的变量 fieldId
     jfieldID fid = env->GetFieldID(jclazz, "numS", "[I");
-    jintArray intArr = static_cast<jintArray>(env->GetObjectClass(thiz,fid));
+    //将传入的参数 numS 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, numS);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jobject jobj = env->GetObjectField(thiz, fid);//获取对象字段，返回JObject(因为Array是object的实例)
+    jintArray jarr = reinterpret_cast<jintArray>(jobj);
+//    if (jarr) {
+//        //获取 jarr 对象的值，并传回给 java层
+//        jint *elems = env->GetIntArrayElements(jarr, nullptr);
+//        //获得jarr数组的长度
+//        jsize length = env->GetArrayLength(jarr);
+//        //遍历数组元素的值
+//        for (int i = 0; i < length; ++i) {
+//            std::cout << elems[i] << std::endl;
+//        }
+//
+////        //补充：再次修改传进来的数据，相关链接：https://www.cnblogs.com/lenve/p/4889326.html
+////        std::cout << "---修改之后---" << std::endl;
+////        for (int i = 0; i < length; i++) {
+////            elems[i] = elems[i] + 1;//修改元素的值
+////            std::cout << elems[i] << std::endl;
+////        }
+//        env->ReleaseIntArrayElements(jarr, elems, 0);
+//        return jarr;
+//    }
 
-    // 将传入的参数 numS 赋值给 thiz 实例对象中 fieldId 对应的变量
-    jint len = 0, sum = 0;
-    jint *arr = env->GetIntArrayElements(numS, 0);
-    len = env->GetArrayLength(numS);
-    //由于一些版本不兼容，i 不定义再for循环中
-    jint i = 0;
-    for (; i < len; ++i) {
-        sum += arr[i];
-    }
-
-    env->NewIntArray(sum);
-
-    env->ReleaseIntArrayElements(numS,arr,0);
-
+    return jarr;
 }
 
 /**
@@ -110,7 +121,15 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_intArrayFrom
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_objectFromJNI(JNIEnv *env, jobject thiz, jobject obj) {
-    // TODO: implement objectFromJNI()
+    //获取实例对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz,"bean", "Lcom/junker/cplusplus/and/java/jni/study/bean/DataBean;");
+    //将传入的参数 obj 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz,fid,obj);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jobject jobj = env->GetObjectField(thiz,fid);
+    return jobj;
 }
 
 /**
@@ -119,7 +138,15 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_objectFromJN
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntegerFromJNI(JNIEnv *env, jobject thiz, jobject list) {
-    // TODO: implement listIntegerFromJNI()
+    //获取实例对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz,"list", "Ljava/util/List;");
+    //将传入的参数 list 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz,fid,list);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jobject jobj = env->GetObjectField(thiz,fid);
+    return jobj;
 }
 
 /**

@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,6 +14,7 @@ import com.junker.cplusplus.and.java.jni.study.bean.DataBean;
 import com.junker.cplusplus.and.java.jni.study.databinding.ActivityMainBinding;
 import com.junker.cplusplus.and.java.jni.study.manager.JNIBaseManager;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Inflater;
@@ -72,16 +74,30 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case 3:// 传参类型：数组( int[]/ string[]/ ...)
                 int[] nums;
-                nums = JNIBaseManager.getInstance().intArrayFromJNI(new int[]{1,2,3});
-                binding.sampleText.setText("intArrayFromJNI = " + nums.length);
+                nums = JNIBaseManager.getInstance().intArrayFromJNI(new int[]{1, 2, 3});
+                StringBuilder value = new StringBuilder();
+                for (int i = 0; i < nums.length; i++) {
+                    value.append(nums[i]).append(",");
+                    Log.e("TAG", nums[i] + "");
+                }
+                binding.sampleText.setText("intArrayFromJNI = " + value);
                 break;
             case 4:// 传参类型：对象
-                Object obj;
-                obj = JNIBaseManager.getInstance().objectFromJNI(new DataBean("Junker",27));
-                binding.sampleText.setText("objectFromJNI = " + obj.toString());
+                DataBean bean;
+                bean = JNIBaseManager.getInstance().objectFromJNI(new DataBean("Junker", 27));
+                binding.sampleText.setText("objectFromJNI = " + bean.toString());
                 break;
             case 5:// 传参类型：集合-List<整型>
-//                listIntegerFromJNI(List<Integer> list);
+                List<Integer> list;
+                List<Integer> oldList = new ArrayList<>();
+                oldList.add(10068);
+                oldList.add(12580);
+                list = JNIBaseManager.getInstance().listIntegerFromJNI(oldList);
+                String text = "";
+                for (int i = 0; i < list.size(); i++) {
+                    text += list.get(0) + ",";
+                }
+                binding.sampleText.setText("listIntegerFromJNI = " + text);
                 break;
             case 6:// 传参类型：集合-List<String>
 //                listStringFromJNI(List<String> mapInt);
