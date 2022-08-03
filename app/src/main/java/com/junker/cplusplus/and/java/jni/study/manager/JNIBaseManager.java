@@ -115,7 +115,7 @@ public class JNIBaseManager {
     /**
      * 传参类型：集合-List<Object>
      */
-    public native List<Object> listObjectFromJNI(List<DataBean> listObject);
+    public native List<DataBean> listObjectFromJNI(List<DataBean> listObject);
 
     /**
      * 传参类型：Map数组-Map<整型>
@@ -135,16 +135,16 @@ public class JNIBaseManager {
     /**
      * 传参类型：Map数组-Map<Object>
      */
-    public native Map<Integer,Object> mapObjectFromJNI(Map<Integer,Object> mapObject);
+    public native Map<Integer,DataBean> mapObjectFromJNI(Map<Integer,DataBean> mapObject);
 
     /**
      * 传参类型：集合嵌套集合-List<List>
      */
-    public native List<List<Object>> listListFromJNI(List<List<Object>> listList);
+    public native List<List<DataBean>> listListFromJNI(List<List<DataBean>> listList);
 
     /**
      * 传参类型：Map嵌套Map-Map<Map>
      */
-    public native Map<Integer,Map<Integer,Object>> mapMapFromJNI(Map<Integer,Map<Integer,Object>> mapMap);
+    public native Map<Integer,Map<Integer,DataBean>> mapMapFromJNI(Map<Integer,Map<Integer,DataBean>> mapMap);
 
 }
