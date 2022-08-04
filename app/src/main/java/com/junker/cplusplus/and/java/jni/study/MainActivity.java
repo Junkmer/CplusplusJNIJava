@@ -18,7 +18,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -167,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
             case 11:// 传参类型：Map数组-Map<int[]>
                 Map<Integer, int[]> mapIntArray;
                 Map<Integer, int[]> oldMapIntArray = new HashMap<>();
-                oldMapIntArray.put(1, new int[]{123,456});
-                oldMapIntArray.put(2, new int[]{789,1000});
+                oldMapIntArray.put(1, new int[]{123, 456});
+                oldMapIntArray.put(2, new int[]{789, 1000});
                 mapIntArray = JNIBaseManager.getInstance().mapIntegerArrayFromJNI(oldMapIntArray);
                 StringBuilder textMapIntArray = new StringBuilder();
                 for (Map.Entry<Integer, int[]> entry : mapIntArray.entrySet()) {
@@ -194,10 +193,49 @@ public class MainActivity extends AppCompatActivity {
                 binding.sampleText.setText("mapObjectFromJNI = " + textMapObject);
                 break;
             case 13:// 传参类型：集合嵌套集合-List<List>
-//                listListFromJNI(List<List<Object>> listList);
+                List<List<DataBean>> listList;
+                List<List<DataBean>> oldListList = new ArrayList<>();
+                List<DataBean> itemList1 = new ArrayList<>();
+                itemList1.add(new DataBean("小明", 25));
+                itemList1.add(new DataBean("张三", 26));
+                oldListList.add(itemList1);
+                List<DataBean> itemList2 = new ArrayList<>();
+                itemList2.add(new DataBean("小亮", 14));
+                itemList2.add(new DataBean("小红", 12));
+                oldListList.add(itemList2);
+                listList = JNIBaseManager.getInstance().listListFromJNI(oldListList);
+                StringBuilder textListList = new StringBuilder();
+                for (int i = 0; i < listList.size(); i++) {
+                    List<DataBean> dataBeans = listList.get(i);
+                    for (int j = 0; j < dataBeans.size(); j++) {
+                        DataBean itemBean = dataBeans.get(i);
+                        textListList.append(itemBean.toString()).append(":");
+                    }
+                    textListList.append(",");
+                }
+                binding.sampleText.setText("listListFromJNI = " + textListList);
                 break;
             case 14:// 传参类型：Map嵌套Map-Map<Map>
-//                mapMapFromJNI(Map<Integer,Map<Integer,Object>> mapMap);
+                Map<Integer, Map<Integer, DataBean>> mapMap;
+                Map<Integer, Map<Integer, DataBean>> oldMapMap = new HashMap<>();
+                Map<Integer, DataBean> itemMap1 = new HashMap<>();
+                itemMap1.put(1, new DataBean("小亮", 14));
+                itemMap1.put(2, new DataBean("小明", 25));
+                oldMapMap.put(11, itemMap1);
+                Map<Integer, DataBean> itemMap2 = new HashMap<>();
+                itemMap2.put(1, new DataBean("张三", 26));
+                itemMap2.put(2, new DataBean("小红", 12));
+                oldMapMap.put(22, itemMap2);
+                mapMap = JNIBaseManager.getInstance().mapMapFromJNI(oldMapMap);
+                StringBuilder textMapMap = new StringBuilder();
+                for (Map.Entry<Integer, Map<Integer, DataBean>> entry : mapMap.entrySet()) {
+                    textMapMap.append("key=").append(entry.getKey()).append("value=");
+                    for (Map.Entry<Integer, DataBean> itemEntry : entry.getValue().entrySet()) {
+                        textMapMap.append("itemKey=").append(itemEntry.getKey()).append("itemValue=").append(itemEntry.getValue());
+                    }
+                    textMapMap.append(",");
+                }
+                binding.sampleText.setText("mapMapFromJNI = " + textMapMap);
                 break;
         }
     }

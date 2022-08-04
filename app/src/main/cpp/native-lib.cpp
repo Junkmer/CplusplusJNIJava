@@ -24,11 +24,22 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_integerFromJ
 //    jclass jclazz = env->FindClass("com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager");  //也可以通过反射获取
     //通过jclass获取对应的变量的 fieldId
     jfieldID fid = env->GetFieldID(jclazz, "num", "I");
-    //将传入的参数 num 赋值 给  thiz 类中 fieldId 对应的变量
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+//    //将传入的参数 num 赋值给 thiz 类中 fieldId 对应的变量
+//    env->SetIntField(thiz, fid, num);
+//    //通过 fieldId 获取对应的值
+//    jint newNum = env->GetIntField(thiz, fid);
+//    return newNum;
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 num 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+    num = 10068;
     env->SetIntField(thiz, fid, num);
-    //通过 fieldId 获取对应的值
+    //获取 thiz 实例对象中 fieldId 对应的变量
     jint newNum = env->GetIntField(thiz, fid);
     return newNum;
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -41,11 +52,20 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_charFromJNI(
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jcazz获取对应的变量 fieldId
     jfieldID fid = env->GetFieldID(jclazz, "ch", "C");
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
     //将传入的参数 ch 赋值给 thiz 实例对象中 fieldId 对应的变量
     env->SetCharField(thiz, fid, ch);
     //通过 fieldId 获取对应的值
     jchar newCh = env->GetCharField(thiz, fid);
     return newCh;
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 ch 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -58,22 +78,42 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_stringFromJN
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应的变量 fieldId
     jfieldID fid = env->GetFieldID(jclazz, "str", "Ljava/lang/String;");
-    //将传入的参数 str 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz, fid, str);
-    //获取 thiz 对象中fieldId对应的对象
-    jstring jstr = static_cast<jstring>(env->GetObjectField(thiz, fid));
-//    if (jstr) {
-//        //获取 jstr对象的值，并传回给 java层
-//        int size = env->GetStringUTFLength(jstr);
-//        const char *value = env->GetStringUTFChars(str, nullptr);
-//        std::string result(value, size);
-//        std::cout << "result[%s] = " << result.c_str() << std::endl;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+//    //将传入的参数 str 赋值给 thiz 实例对象中 fieldId 对应的变量
+//    env->SetObjectField(thiz, fid, str);
+//    //获取 thiz 对象中fieldId对应的对象
+//    jstring jstr = static_cast<jstring>(env->GetObjectField(thiz, fid));
+//    return jstr;
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 str 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+/*          style 1          */
+//    jboolean isCopy = JNI_FALSE; // 返回JNI_TRUE表示原字符串的拷贝，返回JNI_FALSE表示返回原字符串的指针
+//    const char* chr = env->GetStringUTFChars(str,0);
+//    char c[120] = "你好 2017";
+//    strcat(c,chr);//把chr拼接到c
+//    str = env->NewStringUTF(c);
+//    env->ReleaseStringUTFChars(str,chr);
+//    return str;
+/*          style 2          */
+//    char buff[128] = {0};
+//    jboolean isCopy = JNI_FALSE; // 返回JNI_TRUE表示原字符串的拷贝，返回JNI_FALSE表示返回原字符串的指针
+//    const char *c_str = env->GetStringUTFChars(str, &isCopy);
+//    sprintf(buff, "Junker %s", c_str); //在 str 字符基础上拼接字符
+//    str = env->NewStringUTF(buff);
+//    env->SetObjectField(thiz, fid, str);
+//    jstring jstr = static_cast<jstring>(env->GetObjectField(thiz,fid));
 //
-//        env->ReleaseStringChars(jstr, reinterpret_cast<const jchar *>(value));
-//        env->DeleteLocalRef(jstr);
-//
-//        return env->NewStringUTF(result.c_str());
-//    }
+//    env->ReleaseStringUTFChars(str, c_str);
+//    return jstr;
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+    jstring newJstr = env->NewStringUTF("你好 小爱");
+    //将新建的参数 jstr 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, newJstr);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jstring jstr = static_cast<jstring>(env->GetObjectField(thiz,fid));
+
+    env->DeleteLocalRef(newJstr);
     return jstr;
 }
 
@@ -113,6 +153,16 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_intArrayFrom
 //    }
 
     return jarr;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 numS 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -124,12 +174,22 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_objectFromJN
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
-    jfieldID fid = env->GetFieldID(jclazz,"bean", "Lcom/junker/cplusplus/and/java/jni/study/bean/DataBean;");
+    jfieldID fid = env->GetFieldID(jclazz, "bean", "Lcom/junker/cplusplus/and/java/jni/study/bean/DataBean;");
     //将传入的参数 obj 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj);
+    env->SetObjectField(thiz, fid, obj);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject jobj = env->GetObjectField(thiz,fid);
+    jobject jobj = env->GetObjectField(thiz, fid);
     return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 obj 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -141,12 +201,22 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntegerF
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
-    jfieldID fid = env->GetFieldID(jclazz,"list", "Ljava/util/List;");
+    jfieldID fid = env->GetFieldID(jclazz, "list", "Ljava/util/List;");
     //将传入的参数 list 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,list);
+    env->SetObjectField(thiz, fid, list);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject jobj = env->GetObjectField(thiz,fid);
+    jobject jobj = env->GetObjectField(thiz, fid);
     return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 list 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -154,8 +224,26 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntegerF
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listStringFromJNI(JNIEnv *env, jobject thiz, jobject map_int) {
-    // TODO: implement listStringFromJNI()
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listStringFromJNI(JNIEnv *env, jobject thiz, jobject list_string) {
+    //获取实例对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "listString", "Ljava/util/List;");
+    //将传入的参数 list_string 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, list_string);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 list_string 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -164,7 +252,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listStringFr
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntArrayFromJNI(JNIEnv *env, jobject thiz, jobject list_int_array) {
-    // TODO: implement listIntArrayFromJNI()
+    //获取实例对应的 class
+    jclass jcazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jcazz, "listIntArray", "Ljava/util/List;");
+    //将传入的参数 list_int_array 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, list_int_array);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 list_int_array 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -173,7 +279,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntArray
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listObjectFromJNI(JNIEnv *env, jobject thiz, jobject list_object) {
-    // TODO: implement listObjectFromJNI()
+    //获取实例对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "listObject", "Ljava/util/List;");
+    //将传入的参数 list_object 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, list_object);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 list_object 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -182,7 +306,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listObjectFr
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerFromJNI(JNIEnv *env, jobject thiz, jobject map_integer) {
-    // TODO: implement mapIntegerFromJNI()
+    //获取实例对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "mapInteger", "Ljava/util/Map;");
+    //将传入的参数 map_integer 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, map_integer);
+    //获取 thiz 对象中 fieldId 对应的对象
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 map_integer 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -191,7 +333,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerFr
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapStringFromJNI(JNIEnv *env, jobject thiz, jobject map_string) {
-    // TODO: implement mapStringFromJNI()
+    //获取实例对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "mapString", "Ljava/util/Map;");
+    //将传入的参数 map_string 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, map_string);
+    //获取 thiz 对象中 fieldId 对应的变量
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 map_string 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -200,7 +360,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapStringFro
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerArrayFromJNI(JNIEnv *env, jobject thiz, jobject map_integer_array) {
-    // TODO: implement mapIntegerArrayFromJNI()
+    //获取实例对象对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "mapIntegerArray", "Ljava/util/Map;");
+    //将传入的参数 map_integer_array 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, map_integer_array);
+    //获取 thiz 实例对象中 fieldId 对应的变量
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 map_integer_array 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -209,7 +387,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerAr
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapObjectFromJNI(JNIEnv *env, jobject thiz, jobject map_object) {
-    // TODO: implement mapObjectFromJNI()
+    //获取 thiz 实例对象对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "mapObject", "Ljava/util/Map;");
+    //将传入的参数 mapObject 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, map_object);
+    //获取 thiz 实例对象中 fieldId 对应的变量
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 map_object 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -218,7 +414,25 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapObjectFro
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listListFromJNI(JNIEnv *env, jobject thiz, jobject list_list) {
-    // TODO: implement listListFromJNI()
+    //获取 thiz 实例对象对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "listList", "Ljava/util/List;");
+    //将传入的参数 list_list 赋值给 thiz 对象实例中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, list_list);
+    //获取 thiz 对象实例中 fieldId 对应的 变量
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 list_list 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
 
 /**
@@ -227,5 +441,23 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listListFrom
 extern "C"
 JNIEXPORT jobject JNICALL
 Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapMapFromJNI(JNIEnv *env, jobject thiz, jobject map_map) {
-    // TODO: implement mapMapFromJNI()
+    //获取 thiz 实例对象对应的 class
+    jclass jclazz = env->GetObjectClass(thiz);
+    //通过 jclazz 获取对应变量的 fieldId
+    jfieldID fid = env->GetFieldID(jclazz, "mapMap", "Ljava/util/Map;");
+    //将传入的参数 map_map 赋值给 thiz 对象实例中 fieldId 对应的变量
+    env->SetObjectField(thiz, fid, map_map);
+    //获取 thiz 对象实例中 fieldId 对应的变量
+    jobject jobj = env->GetObjectField(thiz, fid);
+    return jobj;
+/* ------------------------------------------------------------------------- */
+/** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
+
+/** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
+    //将传入的参数 map_map 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
+
+    //获取 thiz 实例对象中 fieldId 对应的变量
+
+/** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
+
 }
