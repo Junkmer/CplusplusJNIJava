@@ -372,12 +372,18 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntArray
     //创建新对象
     jclass cls_array = env->FindClass("java/util/ArrayList");
     jmethodID cls_init = env->GetMethodID(cls_array,"<init>", "()V");
-
-
-    //将新建的参数 xxx 赋值给 thiz 实例对象中 fieldId 对应的变量
-
+    jmethodID cls_add = env->GetMethodID(cls_array,"add", "(Ljava/lang/Object;)Z");
+    jobject obj_list = env->NewObject(cls_array,cls_init);
+    jintArray array = env->NewIntArray(3);
+    jsize length = env->GetArrayLength(array);
+    jint item[] = {2,3,4};
+    env->SetIntArrayRegion(array,0,length,item);
+    env->CallBooleanMethod(obj_list,cls_add,array);
+    //将新建的参数 obj_list 赋值给 thiz 实例对象中 fieldId 对应的变量
+    env->SetObjectField(thiz,fid,obj_list);
     //获取 thiz 对象中 fieldId 对应的对象
-
+    jobject j_obj = env->GetObjectField(thiz,fid);
+    return j_obj;
 }
 
 /**
@@ -439,16 +445,24 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerFr
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
     jfieldID fid = env->GetFieldID(jclazz, "mapInteger", "Ljava/util/Map;");
-    //将传入的参数 map_integer 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz, fid, map_integer);
-    //获取 thiz 对象中 fieldId 对应的对象
-    jobject jobj = env->GetObjectField(thiz, fid);
-    return jobj;
 /* ------------------------------------------------------------------------- */
 /** 方式一：将传入的参数，原封不动的赋值给对应的对象 **/
-
+//    //将传入的参数 map_integer 赋值给 thiz 实例对象中 fieldId 对应的变量
+//    env->SetObjectField(thiz, fid, map_integer);
+//    //获取 thiz 对象中 fieldId 对应的对象
+//    jobject jobj = env->GetObjectField(thiz, fid);
+//    return jobj;
 /** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
     //修改传入的参数
+    jclass cls_map = env->GetObjectClass(map_integer);
+    jmethodID mod_get = env->GetMethodID(cls_map,"get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    jmethodID mod_replace = env->GetMethodID(cls_map,"replace", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    jclass cls_integer = env->FindClass("java/lang/Integer");
+    jmethodID mod_static_init = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");
+    jmethodID mod_intValue = env->GetMethodID(cls_integer,"intValue", "()I");
+    jobject map_key = env->CallStaticObjectMethod(cls_integer,mod_static_init,1);
+    jobject map_value = env->CallObjectMethod(map_integer,mod_get,map_key);
+    env->CallStaticObjectMethod(cls_integer,mod_static_init,10086);
 
     //将传入的参数 map_integer 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
 
