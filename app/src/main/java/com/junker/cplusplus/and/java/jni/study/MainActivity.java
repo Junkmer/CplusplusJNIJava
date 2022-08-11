@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                 binding.sampleText.setText("integerFromJNI = " + num);
                 break;
             case 1:// 传参类型：char
-                char ch = 1;
+                char ch;
                 ch = JNIBaseManager.getInstance().charFromJNI("a".toCharArray()[0]);
                 binding.sampleText.setText("charFromJNI = " + ch);
                 break;

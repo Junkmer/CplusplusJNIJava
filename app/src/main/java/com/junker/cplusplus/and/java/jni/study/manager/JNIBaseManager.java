@@ -100,7 +100,7 @@ public class JNIBaseManager {
     /**
      * 传参类型：集合-List<整型>
      */
-    public native List<Integer> listIntegerFromJNI(List<Integer> list);
+    public native List<Integer> listIntegerFromJNI(List<Integer> listInteger);
 
     /**
      * 传参类型：集合-List<String>
