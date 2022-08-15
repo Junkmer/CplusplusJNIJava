@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 Map<String, String> mapString;
                 Map<String, String> oldMapString = new HashMap<>();
                 oldMapString.put("one", "张三");
-                oldMapString.put("tow", "李四");
+                oldMapString.put("two", "李四");
                 mapString = JNIBaseManager.getInstance().mapStringFromJNI(oldMapString);
                 StringBuilder textMapString = new StringBuilder();
                 for (Map.Entry<String, String> entry : mapString.entrySet()) {
