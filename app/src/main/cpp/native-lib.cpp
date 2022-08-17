@@ -650,18 +650,18 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapObjectFro
 //    return j_obj;
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
-    jclass cls_hashmap = env->FindClass("java/util/HashMap");
-    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap,"<init>", "()V");
-    jmethodID mod_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    jclass cls_integer = env->FindClass("java/lang/Integer");
-    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");
-    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");
-    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");
-    jobject obj_hashmap = env->NewObject(cls_hashmap,mod_hashmap_init);
+    jclass cls_hashmap = env->FindClass("java/util/HashMap");//获取HashMap class
+    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap,"<init>", "()V");//获取 HashMap 构造函数
+    jmethodID mod_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap put方法ID
+    jclass cls_integer = env->FindClass("java/lang/Integer");//获取 Integer class
+    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态函数ID
+    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
+    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数
+    jobject obj_hashmap = env->NewObject(cls_hashmap,mod_hashmap_init);//创建 HashMap 对象
     for (int i = 0; i < 3; ++i) {
-        jobject key_integer = env->CallStaticObjectMethod(cls_integer,mod_valueOf,1000+i);
-        jobject value_bean = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("我是超人"),100+i);
-        env->CallObjectMethod(obj_hashmap,mod_put,key_integer,value_bean);
+        jobject key_integer = env->CallStaticObjectMethod(cls_integer,mod_valueOf,1000+i);//创建 Integer 对象
+        jobject value_bean = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("我是超人"),100+i);//创建 DataBean 对象
+        env->CallObjectMethod(obj_hashmap,mod_put,key_integer,value_bean);//给 HashMap 对象添加数据
     }
     //将新建的参数 obj_hashmap 赋值给 thiz 实例对象中 fieldId 对应的变量
     env->SetObjectField(thiz,fid,obj_hashmap);
@@ -689,16 +689,16 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listListFrom
 //    return jobj;
 /** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
 //    //修改传入的参数
-//    jclass cls_list = env->GetObjectClass(list_list);
-//    jmethodID mod_get = env->GetMethodID(cls_list,"get", "(I)Ljava/lang/Object;");
-//    jmethodID mod_set = env->GetMethodID(cls_list,"set", "(ILjava/lang/Object;)Ljava/lang/Object;");
-//    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");
-//    jmethodID setName = env->GetMethodID(cls_bean,"setName", "(Ljava/lang/String;)V");
-//    jmethodID setAge = env->GetMethodID(cls_bean,"setAge", "(I)V");
-//    jobject obj_list = env->CallObjectMethod(list_list,mod_get,0);
-//    jobject obj_list_bean = env->CallObjectMethod(obj_list,mod_get,0);
-//    env->CallVoidMethod(obj_list_bean,setName,env->NewStringUTF("Junker"));
-//    env->CallVoidMethod(obj_list_bean,setAge,27);
+//    jclass cls_list = env->GetObjectClass(list_list);//获取参数 list_list 对应的 class
+//    jmethodID mod_get = env->GetMethodID(cls_list,"get", "(I)Ljava/lang/Object;");//获取 List get函数ID
+//    jmethodID mod_set = env->GetMethodID(cls_list,"set", "(ILjava/lang/Object;)Ljava/lang/Object;");//获取 List set函数ID
+//    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
+//    jmethodID setName = env->GetMethodID(cls_bean,"setName", "(Ljava/lang/String;)V");//获取 DataBean setName函数ID
+//    jmethodID setAge = env->GetMethodID(cls_bean,"setAge", "(I)V");//获取 DataBean setAge函数ID
+//    jobject obj_list = env->CallObjectMethod(list_list,mod_get,0);//获取 list_list 对应索引的对象
+//    jobject obj_list_bean = env->CallObjectMethod(obj_list,mod_get,0);//获取 list_list_item 对应的 DataBean 对象
+//    env->CallVoidMethod(obj_list_bean,setName,env->NewStringUTF("Junker"));//重新给 obj_list_bean 对象DataBean name参数 赋值
+//    env->CallVoidMethod(obj_list_bean,setAge,27);////重新给 obj_list_bean 对象DataBean age参数 赋值
 //    //将传入的参数 list_list 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
 //    env->SetObjectField(thiz,fid,list_list);
 //    //获取 thiz 实例对象中 fieldId 对应的变量
@@ -706,19 +706,19 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listListFrom
 //    return j_obj;
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
-    jclass cls_arraylist = env->FindClass("java/util/ArrayList");
-    jmethodID mod_list_init = env->GetMethodID(cls_arraylist,"<init>", "()V");
-    jmethodID mod_list_add = env->GetMethodID(cls_arraylist,"add", "(Ljava/lang/Object;)Z");
-    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");
-    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");
-    jobject obj_list_list = env->NewObject(cls_arraylist,mod_list_init);
+    jclass cls_arraylist = env->FindClass("java/util/ArrayList");//获取 ArrayList class
+    jmethodID mod_list_init = env->GetMethodID(cls_arraylist,"<init>", "()V");//获取 ArrayList 构造函数ID
+    jmethodID mod_list_add = env->GetMethodID(cls_arraylist,"add", "(Ljava/lang/Object;)Z");//获取 ArrayList add函数ID
+    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
+    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数ID
+    jobject obj_list_list = env->NewObject(cls_arraylist,mod_list_init);//创建父类 List 对象
     for (int i = 0; i < 3; ++i) {
-        jobject obj_list = env->NewObject(cls_arraylist,mod_list_init);
+        jobject obj_list = env->NewObject(cls_arraylist,mod_list_init);//创建子类 List 对象
         for (int j = 0; j < 3; ++j) {
-            jobject obj_bean = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("超人大侠"),100+i);
-            env->CallBooleanMethod(obj_list,mod_list_add,obj_bean);
+            jobject obj_bean = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("超人大侠"),100+i);//创建 DataBean 对象
+            env->CallBooleanMethod(obj_list,mod_list_add,obj_bean);//给子类 List 对象添加数据
         }
-        env->CallBooleanMethod(obj_list_list,mod_list_add,obj_list);
+        env->CallBooleanMethod(obj_list_list,mod_list_add,obj_list);//给父类 List 对象添加数据
     }
     //将新建的参数 obj_list_list 赋值给 thiz 实例对象中 fieldId 对应的变量
     env->SetObjectField(thiz,fid,obj_list_list);
@@ -746,20 +746,20 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapMapFromJN
 //    return jobj;
 /** 方式二：对传入的参数做二次修改，再赋值给对应的对象 **/
 //    //修改传入的参数
-//    jclass cls_map = env->GetObjectClass(map_map);
-//    jmethodID mod_get = env->GetMethodID(cls_map,"get", "(Ljava/lang/Object;)Ljava/lang/Object;");
-////    jmethodID mod_replace = env->GetMethodID(cls_map,"replace", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z");
-//    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");
-//    jmethodID setName = env->GetMethodID(cls_bean,"setName", "(Ljava/lang/String;)V");
-//    jmethodID setAge = env->GetMethodID(cls_bean,"setAge", "(I)V");
-//    jclass cls_integer = env->FindClass("java/lang/Integer");
-//    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");
-//    jobject obj_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,11);
-//    jobject obj_key_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,1);
-//    jobject obj_map = env->CallObjectMethod(map_map,mod_get,obj_key);
-//    jobject obj_map_bean = env->CallObjectMethod(obj_map,mod_get,obj_key_key);
-//    env->CallVoidMethod(obj_map_bean,setName,env->NewStringUTF("Junker"));
-//    env->CallVoidMethod(obj_map_bean,setAge,27);
+//    jclass cls_map = env->GetObjectClass(map_map);//获取 map_map 对象对应的 Map class
+//    jmethodID mod_get = env->GetMethodID(cls_map,"get", "(Ljava/lang/Object;)Ljava/lang/Object;");//获取 Map get函数ID
+////    jmethodID mod_replace = env->GetMethodID(cls_map,"replace", "(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Z");//获取 Map replace函数ID
+//    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
+//    jmethodID setName = env->GetMethodID(cls_bean,"setName", "(Ljava/lang/String;)V");//获取 DataBean setName函数ID
+//    jmethodID setAge = env->GetMethodID(cls_bean,"setAge", "(I)V");//获取 DataBean setAge函数ID
+//    jclass cls_integer = env->FindClass("java/lang/Integer");//获取 Integer class
+//    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态函数ID
+//    jobject obj_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,11);//创建 Integer 对象作为父类 map key
+//    jobject obj_key_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,1);//创建 Integer 对象作为子类 map key
+//    jobject obj_map = env->CallObjectMethod(map_map,mod_get,obj_key);//获取父类 map 对应的子类 map 对象
+//    jobject obj_map_bean = env->CallObjectMethod(obj_map,mod_get,obj_key_key);//获取子类 map 对应的item DataBean 对象
+//    env->CallVoidMethod(obj_map_bean,setName,env->NewStringUTF("Junker"));//给子类 map 对应的item DataBean 对象重新赋值
+//    env->CallVoidMethod(obj_map_bean,setAge,27);////给子类 map 对应的item DataBean 对象重新赋值
 //    //将传入的参数 map_map 修改之后，再赋值给 thiz 对象实例中 field 对应的变量
 //    env->SetObjectField(thiz,fid,map_map);
 //    //获取 thiz 实例对象中 fieldId 对应的变量
@@ -767,23 +767,23 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapMapFromJN
 //    return j_obj;
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
-    jclass cls_hashmap = env->FindClass("java/util/HashMap");
-    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap,"<init>", "()V");
-    jmethodID mod_hashmap_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");
-    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");
-    jclass cls_integer = env->FindClass("java/lang/Integer");
-    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");
-    jobject obj_map_map = env->NewObject(cls_hashmap,mod_hashmap_init);
+    jclass cls_hashmap = env->FindClass("java/util/HashMap");//获取 HashMap class
+    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap,"<init>", "()V");//获取 HashMap 构造函数ID
+    jmethodID mod_hashmap_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap put构造函数ID
+    jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
+    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数
+    jclass cls_integer = env->FindClass("java/lang/Integer");//获取 Integer class
+    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态函数ID
+    jobject obj_map_map = env->NewObject(cls_hashmap,mod_hashmap_init);//创建父类 HashMap 对象
     for (int i = 0; i < 3; ++i) {
-        jobject obj_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,i);
-        jobject obj_value = env->NewObject(cls_hashmap,mod_hashmap_init);
+        jobject obj_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,i);//创建 Integer 作为父类 HashMap key
+        jobject obj_value = env->NewObject(cls_hashmap,mod_hashmap_init);//创建 HashMap 作为父类 HashMap value
         for (int j = 0; j < 3; ++j) {
-            jobject obj_key_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,j);
-            jobject obj_key_value = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("Junker"),1000+i);
-            env->CallObjectMethod(obj_value,mod_hashmap_put,obj_key_key,obj_key_value);
+            jobject obj_key_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,j);//创建 Integer 作为子类 HashMap key
+            jobject obj_key_value = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("Junker"),1000+i);//创建 DataBean 作为子类 value
+            env->CallObjectMethod(obj_value,mod_hashmap_put,obj_key_key,obj_key_value);//给子类 HashMap 对象添加数据
         }
-        env->CallObjectMethod(obj_map_map,mod_hashmap_put,obj_key,obj_value);
+        env->CallObjectMethod(obj_map_map,mod_hashmap_put,obj_key,obj_value);//给父类 HashMap 对象添加数据
     }
     //将新建的参数 obj_map_map 赋值给 thiz 实例对象中 fieldId 对应的变量
     env->SetObjectField(thiz,fid,map_map);
