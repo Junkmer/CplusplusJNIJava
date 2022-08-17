@@ -1,6 +1,7 @@
 #include <jni.h>
 #include <string>
 #include <iostream>
+#include <unistd.h>
 #include "util/LogUtil.h"
 
 extern "C"
@@ -19,7 +20,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_stringFromJN
  */
 extern "C"
 JNIEXPORT jint JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_integerFromJNI(JNIEnv *env, jobject thiz, jint num) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeInteger(JNIEnv *env, jobject thiz, jint num) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
 //    jclass jclazz = env->FindClass("com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager");  //也可以通过反射获取
@@ -53,7 +54,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_integerFromJ
  */
 extern "C"
 JNIEXPORT jchar JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_charFromJNI(JNIEnv *env, jobject thiz, jchar ch) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeChar(JNIEnv *env, jobject thiz, jchar ch) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jcazz获取对应的变量 fieldId
@@ -86,7 +87,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_charFromJNI(
  */
 extern "C"
 JNIEXPORT jstring JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_stringFromJNI__Ljava_lang_String_2(JNIEnv *env, jobject thiz, jstring str) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeString(JNIEnv *env, jobject thiz, jstring str) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应的变量 fieldId
@@ -137,7 +138,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_stringFromJN
  */
 extern "C"
 JNIEXPORT jintArray JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_intArrayFromJNI(JNIEnv *env, jobject thiz, jintArray numS) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeIntArray(JNIEnv *env, jobject thiz, jintArray numS) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应的变量 fieldId
@@ -188,7 +189,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_intArrayFrom
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_objectFromJNI(JNIEnv *env, jobject thiz, jobject obj) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeObject(JNIEnv *env, jobject thiz, jobject obj) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -242,7 +243,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_objectFromJN
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntegerFromJNI(JNIEnv *env, jobject thiz, jobject list_integer) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeListInteger(JNIEnv *env, jobject thiz, jobject list_integer) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -272,17 +273,17 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntegerF
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_array = env->FindClass("java/util/ArrayList"); //获取 ArrayList class
-    jmethodID mod_init = env->GetMethodID(cls_array,"<init>", "()V");//获取 ArrayList 构造函数
-    jmethodID mod_add = env->GetMethodID(cls_array,"add", "(Ljava/lang/Object;)Z");//获取 ArrayList add方法ID
-    jobject obj_array = env->NewObject(cls_array,mod_init);//创建 ArrayList 实例对象
+    jmethodID mod_init = env->GetMethodID(cls_array, "<init>", "()V");//获取 ArrayList 构造函数
+    jmethodID mod_add = env->GetMethodID(cls_array, "add", "(Ljava/lang/Object;)Z");//获取 ArrayList add方法ID
+    jobject obj_array = env->NewObject(cls_array, mod_init);//创建 ArrayList 实例对象
     jclass cls_integer = env->FindClass("java/lang/Integer");//获取 Integer class
-    jmethodID mod_init_integer = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");//获取用于创建 Integer 实例对象 valueOf 静态方法ID
-    jobject obj_integer = env->CallStaticObjectMethod(cls_integer,mod_init_integer,27);//通过 valueOf静态方法创建 Integer 对象实例
-    env->CallBooleanMethod(obj_array,mod_add,obj_integer);//将 Integer 对象添加到 ArrayList 集合中
+    jmethodID mod_init_integer = env->GetStaticMethodID(cls_integer, "valueOf", "(I)Ljava/lang/Integer;");//获取用于创建 Integer 实例对象 valueOf 静态方法ID
+    jobject obj_integer = env->CallStaticObjectMethod(cls_integer, mod_init_integer, 27);//通过 valueOf静态方法创建 Integer 对象实例
+    env->CallBooleanMethod(obj_array, mod_add, obj_integer);//将 Integer 对象添加到 ArrayList 集合中
     //将新建的参数 cls_array 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_array);
+    env->SetObjectField(thiz, fid, obj_array);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
 
     env->DeleteLocalRef(obj_array);
     env->DeleteLocalRef(cls_integer);
@@ -294,7 +295,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntegerF
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listStringFromJNI(JNIEnv *env, jobject thiz, jobject list_string) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeListString(JNIEnv *env, jobject thiz, jobject list_string) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -320,15 +321,15 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listStringFr
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass array_class = env->FindClass("java/util/ArrayList");//获取 ArrayList class
-    jmethodID mod_init = env->GetMethodID(array_class,"<init>", "()V");//获取 ArrayList 构造方法ID
-    jmethodID mod_add = env->GetMethodID(array_class,"add", "(Ljava/lang/Object;)Z");//获取 ArrayList add方法ID
+    jmethodID mod_init = env->GetMethodID(array_class, "<init>", "()V");//获取 ArrayList 构造方法ID
+    jmethodID mod_add = env->GetMethodID(array_class, "add", "(Ljava/lang/Object;)Z");//获取 ArrayList add方法ID
     jstring item_str = env->NewStringUTF("Junker");//创建一个 string 对象
-    jobject obj_array = env->NewObject(array_class,mod_init);//创建一个 ArrayList 对象
-    env->CallBooleanMethod(obj_array,mod_add,item_str);//给 ArrayList 对象添加 数据
+    jobject obj_array = env->NewObject(array_class, mod_init);//创建一个 ArrayList 对象
+    env->CallBooleanMethod(obj_array, mod_add, item_str);//给 ArrayList 对象添加 数据
     //将新建的参数 array_class 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_array);
+    env->SetObjectField(thiz, fid, obj_array);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
 
     env->DeleteLocalRef(obj_array);
     return j_obj;
@@ -339,7 +340,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listStringFr
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntArrayFromJNI(JNIEnv *env, jobject thiz, jobject list_int_array) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeListIntArray(JNIEnv *env, jobject thiz, jobject list_int_array) {
     //获取实例对应的 class
     jclass jcazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -371,18 +372,18 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntArray
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_array = env->FindClass("java/util/ArrayList");//获取 ArrayList class
-    jmethodID cls_init = env->GetMethodID(cls_array,"<init>", "()V");//获取 ArrayList 构造函数
-    jmethodID cls_add = env->GetMethodID(cls_array,"add", "(Ljava/lang/Object;)Z");//获取 ArrayList add方法ID
-    jobject obj_list = env->NewObject(cls_array,cls_init);//创建 ArrayList 实例对象
+    jmethodID cls_init = env->GetMethodID(cls_array, "<init>", "()V");//获取 ArrayList 构造函数
+    jmethodID cls_add = env->GetMethodID(cls_array, "add", "(Ljava/lang/Object;)Z");//获取 ArrayList add方法ID
+    jobject obj_list = env->NewObject(cls_array, cls_init);//创建 ArrayList 实例对象
     jintArray array = env->NewIntArray(3);//创建 jintArray 对象
     jsize length = env->GetArrayLength(array);
-    jint item[] = {2,3,4};
-    env->SetIntArrayRegion(array,0,length,item);//给 jintArray 对象赋值
-    env->CallBooleanMethod(obj_list,cls_add,array);//给 ArrayList 添加数据
+    jint item[] = {2, 3, 4};
+    env->SetIntArrayRegion(array, 0, length, item);//给 jintArray 对象赋值
+    env->CallBooleanMethod(obj_list, cls_add, array);//给 ArrayList 添加数据
     //将新建的参数 obj_list 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_list);
+    env->SetObjectField(thiz, fid, obj_list);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
     return j_obj;
 }
 
@@ -391,7 +392,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listIntArray
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listObjectFromJNI(JNIEnv *env, jobject thiz, jobject list_object) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeListObject(JNIEnv *env, jobject thiz, jobject list_object) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -440,7 +441,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listObjectFr
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerFromJNI(JNIEnv *env, jobject thiz, jobject map_integer) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeMapInteger(JNIEnv *env, jobject thiz, jobject map_integer) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -472,23 +473,23 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerFr
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_hashmap = env->FindClass("java/util/HashMap");
-    jmethodID mod_init = env->GetMethodID(cls_hashmap,"<init>", "()V");
-    jmethodID mod_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    jobject obj_hashmap = env->NewObject(cls_hashmap,mod_init);
+    jmethodID mod_init = env->GetMethodID(cls_hashmap, "<init>", "()V");
+    jmethodID mod_put = env->GetMethodID(cls_hashmap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    jobject obj_hashmap = env->NewObject(cls_hashmap, mod_init);
     jclass cls_integer = env->FindClass("java/lang/Integer");
-    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");
+    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer, "valueOf", "(I)Ljava/lang/Integer;");
     for (int i = 0; i < 3; ++i) {
-        jobject obj_integer_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,i);
-        jobject obj_integer_value = env->CallStaticObjectMethod(cls_integer,mod_valueOf,10081+i);
-        env->CallObjectMethod(obj_hashmap,mod_put,obj_integer_key,obj_integer_value);
+        jobject obj_integer_key = env->CallStaticObjectMethod(cls_integer, mod_valueOf, i);
+        jobject obj_integer_value = env->CallStaticObjectMethod(cls_integer, mod_valueOf, 10081 + i);
+        env->CallObjectMethod(obj_hashmap, mod_put, obj_integer_key, obj_integer_value);
 
         env->DeleteLocalRef(obj_integer_key);
         env->DeleteLocalRef(obj_integer_value);
     }
     //将新建的参数 obj_hashmap 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_hashmap);
+    env->SetObjectField(thiz, fid, obj_hashmap);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
     return j_obj;
 }
 
@@ -497,7 +498,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerFr
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapStringFromJNI(JNIEnv *env, jobject thiz, jobject map_string) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeMapString(JNIEnv *env, jobject thiz, jobject map_string) {
     //获取实例对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -534,16 +535,16 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapStringFro
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_hashmap = env->FindClass("java/util/HashMap");
-    jmethodID mod_init = env->GetMethodID(cls_hashmap,"<init>", "()V");
-    jmethodID mod_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-    jobject obj_hashmap = env->NewObject(cls_hashmap,mod_init);
-    env->CallObjectMethod(obj_hashmap,mod_put,env->NewStringUTF("1"),env->NewStringUTF("Junker"));
-    env->CallObjectMethod(obj_hashmap,mod_put,env->NewStringUTF("2"),env->NewStringUTF("Jerry"));
-    env->CallObjectMethod(obj_hashmap,mod_put,env->NewStringUTF("3"),env->NewStringUTF("Bob"));
+    jmethodID mod_init = env->GetMethodID(cls_hashmap, "<init>", "()V");
+    jmethodID mod_put = env->GetMethodID(cls_hashmap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+    jobject obj_hashmap = env->NewObject(cls_hashmap, mod_init);
+    env->CallObjectMethod(obj_hashmap, mod_put, env->NewStringUTF("1"), env->NewStringUTF("Junker"));
+    env->CallObjectMethod(obj_hashmap, mod_put, env->NewStringUTF("2"), env->NewStringUTF("Jerry"));
+    env->CallObjectMethod(obj_hashmap, mod_put, env->NewStringUTF("3"), env->NewStringUTF("Bob"));
     //将新建的参数 obj_hashmap 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_hashmap);
+    env->SetObjectField(thiz, fid, obj_hashmap);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
     return j_obj;
 }
 
@@ -552,7 +553,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapStringFro
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerArrayFromJNI(JNIEnv *env, jobject thiz, jobject map_integer_array) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeMapIntegerArray(JNIEnv *env, jobject thiz, jobject map_integer_array) {
     //获取实例对象对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -592,23 +593,23 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerAr
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_hashmap = env->FindClass("java/util/HashMap");//获取 HashMap class
-    jmethodID mod_init = env->GetMethodID(cls_hashmap,"<init>", "()V");//获取 HashMap 构造函数ID
-    jmethodID mod_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap get方法ID
-    jobject obj_hashmap = env->NewObject(cls_hashmap,mod_init);//创建 HashMap 对象实例
+    jmethodID mod_init = env->GetMethodID(cls_hashmap, "<init>", "()V");//获取 HashMap 构造函数ID
+    jmethodID mod_put = env->GetMethodID(cls_hashmap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap get方法ID
+    jobject obj_hashmap = env->NewObject(cls_hashmap, mod_init);//创建 HashMap 对象实例
     jclass cls_integer = env->FindClass("java/lang/Integer");//获取 Integer class
-    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态成员函数ID
+    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer, "valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态成员函数ID
     for (int i = 0; i < 3; ++i) {
-        jobject obj_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,001+i);//通过 Integer valueOf静态成员函数创建 Integer 对象并赋初始值
+        jobject obj_key = env->CallStaticObjectMethod(cls_integer, mod_valueOf, 001 + i);//通过 Integer valueOf静态成员函数创建 Integer 对象并赋初始值
         jintArray array_value = env->NewIntArray(3);//创建 jintArray 对象并设置长度
         jsize length = env->GetArrayLength(array_value);//获取 jintArray 长度
-        jint elem[] = {111+i,222+i,333+i};//创建 jint 数组
-        env->SetIntArrayRegion(array_value,0,length,elem);//给 array_value 数组赋值
-        env->CallObjectMethod(obj_hashmap,mod_put,obj_key,array_value);//给新建的 obj_hashmap 对象添加数据
+        jint elem[] = {111 + i, 222 + i, 333 + i};//创建 jint 数组
+        env->SetIntArrayRegion(array_value, 0, length, elem);//给 array_value 数组赋值
+        env->CallObjectMethod(obj_hashmap, mod_put, obj_key, array_value);//给新建的 obj_hashmap 对象添加数据
     }
     //将新建的参数 obj_hashmap 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_hashmap);
+    env->SetObjectField(thiz, fid, obj_hashmap);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
     return j_obj;
 }
 
@@ -617,7 +618,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapIntegerAr
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapObjectFromJNI(JNIEnv *env, jobject thiz, jobject map_object) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeMapObject(JNIEnv *env, jobject thiz, jobject map_object) {
     //获取 thiz 实例对象对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -651,22 +652,22 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapObjectFro
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_hashmap = env->FindClass("java/util/HashMap");//获取HashMap class
-    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap,"<init>", "()V");//获取 HashMap 构造函数
-    jmethodID mod_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap put方法ID
+    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap, "<init>", "()V");//获取 HashMap 构造函数
+    jmethodID mod_put = env->GetMethodID(cls_hashmap, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap put方法ID
     jclass cls_integer = env->FindClass("java/lang/Integer");//获取 Integer class
-    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态函数ID
+    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer, "valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态函数ID
     jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
-    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数
-    jobject obj_hashmap = env->NewObject(cls_hashmap,mod_hashmap_init);//创建 HashMap 对象
+    jmethodID mod_bean_init = env->GetMethodID(cls_bean, "<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数
+    jobject obj_hashmap = env->NewObject(cls_hashmap, mod_hashmap_init);//创建 HashMap 对象
     for (int i = 0; i < 3; ++i) {
-        jobject key_integer = env->CallStaticObjectMethod(cls_integer,mod_valueOf,1000+i);//创建 Integer 对象
-        jobject value_bean = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("我是超人"),100+i);//创建 DataBean 对象
-        env->CallObjectMethod(obj_hashmap,mod_put,key_integer,value_bean);//给 HashMap 对象添加数据
+        jobject key_integer = env->CallStaticObjectMethod(cls_integer, mod_valueOf, 1000 + i);//创建 Integer 对象
+        jobject value_bean = env->NewObject(cls_bean, mod_bean_init, env->NewStringUTF("我是超人"), 100 + i);//创建 DataBean 对象
+        env->CallObjectMethod(obj_hashmap, mod_put, key_integer, value_bean);//给 HashMap 对象添加数据
     }
     //将新建的参数 obj_hashmap 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_hashmap);
+    env->SetObjectField(thiz, fid, obj_hashmap);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
     return j_obj;
 }
 
@@ -675,7 +676,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapObjectFro
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listListFromJNI(JNIEnv *env, jobject thiz, jobject list_list) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeListList(JNIEnv *env, jobject thiz, jobject list_list) {
     //获取 thiz 实例对象对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -707,23 +708,23 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listListFrom
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_arraylist = env->FindClass("java/util/ArrayList");//获取 ArrayList class
-    jmethodID mod_list_init = env->GetMethodID(cls_arraylist,"<init>", "()V");//获取 ArrayList 构造函数ID
-    jmethodID mod_list_add = env->GetMethodID(cls_arraylist,"add", "(Ljava/lang/Object;)Z");//获取 ArrayList add函数ID
+    jmethodID mod_list_init = env->GetMethodID(cls_arraylist, "<init>", "()V");//获取 ArrayList 构造函数ID
+    jmethodID mod_list_add = env->GetMethodID(cls_arraylist, "add", "(Ljava/lang/Object;)Z");//获取 ArrayList add函数ID
     jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
-    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数ID
-    jobject obj_list_list = env->NewObject(cls_arraylist,mod_list_init);//创建父类 List 对象
+    jmethodID mod_bean_init = env->GetMethodID(cls_bean, "<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数ID
+    jobject obj_list_list = env->NewObject(cls_arraylist, mod_list_init);//创建父类 List 对象
     for (int i = 0; i < 3; ++i) {
-        jobject obj_list = env->NewObject(cls_arraylist,mod_list_init);//创建子类 List 对象
+        jobject obj_list = env->NewObject(cls_arraylist, mod_list_init);//创建子类 List 对象
         for (int j = 0; j < 3; ++j) {
-            jobject obj_bean = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("超人大侠"),100+i);//创建 DataBean 对象
-            env->CallBooleanMethod(obj_list,mod_list_add,obj_bean);//给子类 List 对象添加数据
+            jobject obj_bean = env->NewObject(cls_bean, mod_bean_init, env->NewStringUTF("超人大侠"), 100 + i);//创建 DataBean 对象
+            env->CallBooleanMethod(obj_list, mod_list_add, obj_bean);//给子类 List 对象添加数据
         }
-        env->CallBooleanMethod(obj_list_list,mod_list_add,obj_list);//给父类 List 对象添加数据
+        env->CallBooleanMethod(obj_list_list, mod_list_add, obj_list);//给父类 List 对象添加数据
     }
     //将新建的参数 obj_list_list 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,obj_list_list);
+    env->SetObjectField(thiz, fid, obj_list_list);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
     return j_obj;
 }
 
@@ -732,7 +733,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_listListFrom
  */
 extern "C"
 JNIEXPORT jobject JNICALL
-Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapMapFromJNI(JNIEnv *env, jobject thiz, jobject map_map) {
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeMapMap(JNIEnv *env, jobject thiz, jobject map_map) {
     //获取 thiz 实例对象对应的 class
     jclass jclazz = env->GetObjectClass(thiz);
     //通过 jclazz 获取对应变量的 fieldId
@@ -768,26 +769,158 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_mapMapFromJN
 /** 方式三：不启用传入的参数，重新 new 一个新的对象，重新赋值 **/
     //创建新对象
     jclass cls_hashmap = env->FindClass("java/util/HashMap");//获取 HashMap class
-    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap,"<init>", "()V");//获取 HashMap 构造函数ID
-    jmethodID mod_hashmap_put = env->GetMethodID(cls_hashmap,"put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap put构造函数ID
+    jmethodID mod_hashmap_init = env->GetMethodID(cls_hashmap, "<init>", "()V");//获取 HashMap 构造函数ID
+    jmethodID mod_hashmap_put = env->GetMethodID(cls_hashmap, "put",
+                                                 "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");//获取 HashMap put构造函数ID
     jclass cls_bean = env->FindClass("com/junker/cplusplus/and/java/jni/study/bean/DataBean");//获取 DataBean class
-    jmethodID mod_bean_init = env->GetMethodID(cls_bean,"<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数
+    jmethodID mod_bean_init = env->GetMethodID(cls_bean, "<init>", "(Ljava/lang/String;I)V");//获取 DataBean 构造函数
     jclass cls_integer = env->FindClass("java/lang/Integer");//获取 Integer class
-    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer,"valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态函数ID
-    jobject obj_map_map = env->NewObject(cls_hashmap,mod_hashmap_init);//创建父类 HashMap 对象
+    jmethodID mod_valueOf = env->GetStaticMethodID(cls_integer, "valueOf", "(I)Ljava/lang/Integer;");//获取 Integer valueOf静态函数ID
+    jobject obj_map_map = env->NewObject(cls_hashmap, mod_hashmap_init);//创建父类 HashMap 对象
     for (int i = 0; i < 3; ++i) {
-        jobject obj_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,i);//创建 Integer 作为父类 HashMap key
-        jobject obj_value = env->NewObject(cls_hashmap,mod_hashmap_init);//创建 HashMap 作为父类 HashMap value
+        jobject obj_key = env->CallStaticObjectMethod(cls_integer, mod_valueOf, i);//创建 Integer 作为父类 HashMap key
+        jobject obj_value = env->NewObject(cls_hashmap, mod_hashmap_init);//创建 HashMap 作为父类 HashMap value
         for (int j = 0; j < 3; ++j) {
-            jobject obj_key_key = env->CallStaticObjectMethod(cls_integer,mod_valueOf,j);//创建 Integer 作为子类 HashMap key
-            jobject obj_key_value = env->NewObject(cls_bean,mod_bean_init,env->NewStringUTF("Junker"),1000+i);//创建 DataBean 作为子类 value
-            env->CallObjectMethod(obj_value,mod_hashmap_put,obj_key_key,obj_key_value);//给子类 HashMap 对象添加数据
+            jobject obj_key_key = env->CallStaticObjectMethod(cls_integer, mod_valueOf, j);//创建 Integer 作为子类 HashMap key
+            jobject obj_key_value = env->NewObject(cls_bean, mod_bean_init, env->NewStringUTF("Junker"), 1000 + i);//创建 DataBean 作为子类 value
+            env->CallObjectMethod(obj_value, mod_hashmap_put, obj_key_key, obj_key_value);//给子类 HashMap 对象添加数据
         }
-        env->CallObjectMethod(obj_map_map,mod_hashmap_put,obj_key,obj_value);//给父类 HashMap 对象添加数据
+        env->CallObjectMethod(obj_map_map, mod_hashmap_put, obj_key, obj_value);//给父类 HashMap 对象添加数据
     }
     //将新建的参数 obj_map_map 赋值给 thiz 实例对象中 fieldId 对应的变量
-    env->SetObjectField(thiz,fid,map_map);
+    env->SetObjectField(thiz, fid, map_map);
     //获取 thiz 对象中 fieldId 对应的对象
-    jobject j_obj = env->GetObjectField(thiz,fid);
+    jobject j_obj = env->GetObjectField(thiz, fid);
     return j_obj;
 }
+
+/***************************************** Thread start *********************************************/
+/**
+* 线程处理
+*/
+
+JavaVM *gJavaVM = NULL;//全局 JavaVM 变量
+jobject gJavaObj = NULL;//全局 jobject 变量
+
+jmethodID nativeCallback = NULL;//全局的方法ID
+
+static void *native_thread_exec(void *arg) {
+    //从全局的JavaVM中获取到环境变量
+    JNIEnv *env;
+    gJavaVM->AttachCurrentThread(&env, NULL);
+
+    //线程循环
+    for (int i = 0; i < 1; ++i) {
+        LOGCATE("start thread time");
+        double startTime,stopTime,durationTimeTime;
+        startTime=time(NULL);
+
+        sleep(5);//单位：秒
+
+        stopTime=time(NULL);
+        durationTimeTime = (double)difftime(stopTime,startTime);
+        LOGCATE("耗时(time): : %f", durationTimeTime);
+
+        //跨线程回调Java层函数
+        const char *desc = "我是错误提示desc_001";
+        jstring descStr = env->NewStringUTF(desc);
+        LOGCATE("native_thread_exec - 2 - the pThread id : %ld", pthread_self());
+        env->CallVoidMethod(gJavaObj, nativeCallback, 100+i,descStr);
+    }
+
+    gJavaVM->DetachCurrentThread();
+    LOGCATE("----------------------------");
+    return ((void *)nullptr);
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeThreadInteraction(JNIEnv *env, jobject thiz, jobject call_back) {
+    gJavaObj = env->NewGlobalRef(call_back);
+    jclass clazz = env->GetObjectClass(call_back);
+    nativeCallback = env->GetMethodID(clazz, "onError", "(ILjava/lang/String;)V");
+
+    //操作方式二，调用JNI函数保存JavaVM
+    env->GetJavaVM(&gJavaVM);
+    pthread_t id;
+    //通过 pthread 库创建线程
+    LOGCATE("create native thread");
+    if (pthread_create(&id, NULL, native_thread_exec, NULL) != 0) {
+        LOGCATE("native thread create fail");
+        return;
+    }
+    LOGCATE("native thread create success");
+}
+
+//JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
+////    //操作方式一，调用JNI函数保存JavaVM. 记录 Java 虚拟机指针
+////    gJavaVM = vm;
+//
+//    //获取 JNIEnv 指针
+//    JNIEnv *env = NULL;
+//    //获取JNI_VERSION版本
+//    if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK) {
+//        LOGCATE("check version error");
+//        return -1;
+//    }
+//
+//    //返回JNI 的版本
+//    return JNI_VERSION_1_6;
+//}
+
+
+/**-------------------------------------- Thread end --------------------------------------**/
+
+/**************************************** 动态注册 start ****************************************/
+
+jstring dynamicRegister(JNIEnv *env, jclass clazz){
+    std::string hello = "Hello from C++ by 动态注册";
+    return env->NewStringUTF(hello.c_str());
+}
+
+/**
+ * 所谓的动态注册 是指，动态注册JAVA的Native方法，使得c/c++里面方法名 可以和 java 的Native方法名可以不同，
+ * 动态注册是将将二者方法名关联起来，以后在修改Native方法名时，只需修改动态注册关联的方法名称即可
+ *  System.loadLibrary("xxx"); 这个方法还是必须要调用的，不管动态还是静态
+ */
+#define JNIREG_CLASS "com/junker.cplusplus.and.java.jni.study.manager"  //Java类的路径：包名+类名
+#define NUM_METHOES(x) ((int) (sizeof(x) / sizeof((x)[0]))) //获取方法的数量
+
+static JNINativeMethod method_table[] = {
+        // 第一个参数a 是java native方法名，
+        // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
+        // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
+        {"nativeDynamicRegisterMethod", "()Ljava/lang/String;",                                     (jstring *) dynamicRegister},
+};
+
+static int registerMethods(JNIEnv *env, const char *className,
+                           JNINativeMethod *gMethods, int numMethods) {
+    jclass clazz = env->FindClass(className);
+    if (clazz == NULL) {
+        return JNI_FALSE;
+    }
+    //注册native方法
+    if (env->RegisterNatives(clazz, gMethods, numMethods) < 0) {
+        return JNI_FALSE;
+    }
+    return JNI_TRUE;
+}
+
+extern "C"
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    JNIEnv *env = NULL;
+    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+        return JNI_ERR;
+    }
+    assert(env != NULL);
+
+// 注册native方法
+    if (!registerMethods(env, JNIREG_CLASS, method_table, NUM_METHOES(method_table))) {
+        return JNI_ERR;
+    }
+
+    return JNI_VERSION_1_6;
+}
+
+/**------------------------------------- 动态注册 end -------------------------------------**/
+
