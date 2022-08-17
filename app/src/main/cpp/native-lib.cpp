@@ -812,25 +812,25 @@ static void *native_thread_exec(void *arg) {
     //线程循环
     for (int i = 0; i < 1; ++i) {
         LOGCATE("start thread time");
-        double startTime,stopTime,durationTimeTime;
-        startTime=time(NULL);
+        double startTime, stopTime, durationTimeTime;
+        startTime = time(NULL);
 
         sleep(5);//单位：秒
 
-        stopTime=time(NULL);
-        durationTimeTime = (double)difftime(stopTime,startTime);
+        stopTime = time(NULL);
+        durationTimeTime = (double) difftime(stopTime, startTime);
         LOGCATE("耗时(time): : %f", durationTimeTime);
 
         //跨线程回调Java层函数
         const char *desc = "我是错误提示desc_001";
         jstring descStr = env->NewStringUTF(desc);
         LOGCATE("native_thread_exec - 2 - the pThread id : %ld", pthread_self());
-        env->CallVoidMethod(gJavaObj, nativeCallback, 100+i,descStr);
+        env->CallVoidMethod(gJavaObj, nativeCallback, 100 + i, descStr);
     }
 
     gJavaVM->DetachCurrentThread();
     LOGCATE("----------------------------");
-    return ((void *)nullptr);
+    return ((void *) nullptr);
 }
 
 extern "C"
@@ -842,6 +842,7 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeThread
 
     //操作方式二，调用JNI函数保存JavaVM
     env->GetJavaVM(&gJavaVM);
+
     pthread_t id;
     //通过 pthread 库创建线程
     LOGCATE("create native thread");
@@ -868,12 +869,11 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeThread
 //    return JNI_VERSION_1_6;
 //}
 
-
 /**-------------------------------------- Thread end --------------------------------------**/
 
 /**************************************** 动态注册 start ****************************************/
 
-jstring dynamicRegister(JNIEnv *env, jclass clazz){
+jstring dynamicRegister(JNIEnv *env) {
     std::string hello = "Hello from C++ by 动态注册";
     return env->NewStringUTF(hello.c_str());
 }
@@ -883,18 +883,17 @@ jstring dynamicRegister(JNIEnv *env, jclass clazz){
  * 动态注册是将将二者方法名关联起来，以后在修改Native方法名时，只需修改动态注册关联的方法名称即可
  *  System.loadLibrary("xxx"); 这个方法还是必须要调用的，不管动态还是静态
  */
-#define JNIREG_CLASS "com/junker.cplusplus.and.java.jni.study.manager"  //Java类的路径：包名+类名
+#define JNIREG_CLASS "com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager"  //Java类的路径：包名+类名
 #define NUM_METHOES(x) ((int) (sizeof(x) / sizeof((x)[0]))) //获取方法的数量
 
 static JNINativeMethod method_table[] = {
         // 第一个参数a 是java native方法名，
         // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
         // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
-        {"nativeDynamicRegisterMethod", "()Ljava/lang/String;",                                     (jstring *) dynamicRegister},
+        {"nativeDynamicRegisterMethod", "()Ljava/lang/String;", (jstring *) dynamicRegister},
 };
 
-static int registerMethods(JNIEnv *env, const char *className,
-                           JNINativeMethod *gMethods, int numMethods) {
+static int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods) {
     jclass clazz = env->FindClass(className);
     if (clazz == NULL) {
         return JNI_FALSE;

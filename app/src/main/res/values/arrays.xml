@@ -17,5 +17,6 @@
         <item>传参类型：集合嵌套集合</item>
         <item>传参类型：Map嵌套Map</item>
         <item>线程交互处理</item>
+        <item>JNI动态注册</item>
     </string-array>
 </resources>

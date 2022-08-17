@@ -268,8 +268,9 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 break;
-            case 16:// 静态注册
+            case 16:// JNI动态注册
                 String context = JNIBaseManager.getInstance().nativeDynamicRegisterMethod();
+                binding.sampleText.setText("nativeDynamicRegisterMethode = " + context);
                 break;
         }
     }
