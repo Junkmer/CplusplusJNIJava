@@ -873,34 +873,128 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeThread
 
 /**************************************** 动态注册 start ****************************************/
 
-jstring dynamicRegister(JNIEnv *env) {
-    std::string hello = "Hello from C++ by 动态注册";
-    return env->NewStringUTF(hello.c_str());
-}
-
 /**
  * 所谓的动态注册 是指，动态注册JAVA的Native方法，使得c/c++里面方法名 可以和 java 的Native方法名可以不同，
  * 动态注册是将将二者方法名关联起来，以后在修改Native方法名时，只需修改动态注册关联的方法名称即可
- *  System.loadLibrary("xxx"); 这个方法还是必须要调用的，不管动态还是静态
+ * System.loadLibrary("xxx"); 这个方法还是必须要调用的，不管动态还是静态
  */
-#define JNIREG_CLASS "com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager"  //Java类的路径：包名+类名
+
+/*--------------------------------------- 动态注册方式一 ---------------------------------------*/
+
+//jstring dynamicRegister(JNIEnv *env) {
+//    std::string hello = "Hello from C++ by 动态注册";
+//    return env->NewStringUTF(hello.c_str());
+//}
+//
+///**
+// * 所谓的动态注册 是指，动态注册JAVA的Native方法，使得c/c++里面方法名 可以和 java 的Native方法名可以不同，
+// * 动态注册是将将二者方法名关联起来，以后在修改Native方法名时，只需修改动态注册关联的方法名称即可
+// * System.loadLibrary("xxx"); 这个方法还是必须要调用的，不管动态还是静态
+// */
+//#define JNIREG_CLASS "com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager"  //Java类的路径：包名+类名
+//#define NUM_METHOES(x) ((int) (sizeof(x) / sizeof((x)[0]))) //获取方法的数量
+//
+//static JNINativeMethod method_table[] = {
+//        // 第一个参数a 是java native方法名，
+//        // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
+//        // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
+//        {"nativeDynamicRegisterMethodOne", "()Ljava/lang/String;", (jstring *) dynamicRegister}
+//};
+//
+//static int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods) {
+//    jclass clazz = env->FindClass(className);
+//    if (clazz == NULL) {
+//        return JNI_FALSE;
+//    }
+//    //注册native方法
+//    if (env->RegisterNatives(clazz, gMethods, numMethods) < 0) {
+//        return JNI_FALSE;
+//    }
+//    return JNI_TRUE;
+//}
+//
+//
+//extern "C"
+//JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+//    JNIEnv *env = NULL;
+//    if (vm->GetEnv((void **) &env, JNI_VERSION_1_6) != JNI_OK) {
+//        return JNI_ERR;
+//    }
+//    assert(env != NULL);
+//
+//    if (!registerMethods(env, JNIREG_CLASS, method_table, NUM_METHOES(method_table))) {
+//        return JNI_ERR;
+//    }
+//
+//    return JNI_VERSION_1_6;
+//}
+
+/*--------------------------------------- 动态注册方式二 ---------------------------------------*/
+
+#include <map>
+
 #define NUM_METHOES(x) ((int) (sizeof(x) / sizeof((x)[0]))) //获取方法的数量
 
-static JNINativeMethod method_table[] = {
+jstring dynamicRegisterOne(JNIEnv *env) {
+    std::string hello = "Hello from C++ One by 动态注册";
+    return env->NewStringUTF(hello.c_str());
+}
+
+//jstring dynamicRegisterTwo(JNIEnv *env) {
+//    std::string hello = "Hello from C++ Two by 动态注册";
+//    return env->NewStringUTF(hello.c_str());
+//}
+//
+//jint registerFirst(JNIEnv *env,jint number) {
+////    jclass clazz = env->GetObjectClass(thiz);
+////    jclass clazz = env->FindClass("com/junker/cplusplus/and/java/jni/study/manager/BaseCenter");
+////    jfieldID fid = env->GetFieldID(clazz,"number", "I");
+////    env->SetIntField(thiz,fid,number);
+//    return number;
+//}
+//
+//void registerSecond(JNIEnv *env, int number) {
+//
+//}
+
+static std::map<jclass,JNINativeMethod[]> dynamicData;
+
+#define JNIREG_Manager_CLASS "com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager"  //Java类的路径：包名+类名(下面是对应：类中的方法)
+static JNINativeMethod base_method_table[] = {
         // 第一个参数a 是java native方法名，
         // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
         // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
-        {"nativeDynamicRegisterMethod", "()Ljava/lang/String;", (jstring *) dynamicRegister},
+        {"nativeDynamicRegisterMethodOne", "()Ljava/lang/String;", (jstring *) dynamicRegisterOne}
 };
 
-static int registerMethods(JNIEnv *env, const char *className, JNINativeMethod *gMethods, int numMethods) {
-    jclass clazz = env->FindClass(className);
-    if (clazz == NULL) {
-        return JNI_FALSE;
-    }
-    //注册native方法
-    if (env->RegisterNatives(clazz, gMethods, numMethods) < 0) {
-        return JNI_FALSE;
+//#define JNIREG_Center_CLASS "com/junker/cplusplus/and/java/jni/study/manager/BaseCenter"  //Java类的路径：包名+类名(下面是对应：类中的方法)
+//static std::list<JNINativeMethod> center_method_table = {
+//        // 第一个参数a 是java native方法名，
+//        // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
+//        // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
+//        {"nativeDynamicRegisterFirst", "(I)I", (jint *) registerFirst},
+//        {"nativeDynamicRegisterSecond", "(I)", (void *) registerSecond}
+//};
+
+void initNativeClassAMethod(JNIEnv *env) {
+    jclass clazz_1 = env->FindClass(JNIREG_Manager_CLASS);
+    dynamicData.insert(std::pair<jclass, JNINativeMethod[]>(clazz_1, base_method_table));
+    dynamicData.insert(std::pair<jclass,JNINativeMethod[]>(clazz_1,base_method_table));
+
+//    jclass clazz_2 = env->FindClass(JNIREG_Center_CLASS);
+//    dynamicData.insert(std::pair<jclass, std::list<JNINativeMethod>>(clazz_2, center_method_table));
+}
+
+static int registerMethods(JNIEnv *env, std::map<jclass, JNINativeMethod[]> *dataList) {
+    jclass clazz = env->FindClass("com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager");
+    for (std::map<jclass, JNINativeMethod[]>::iterator item = dataList->begin(); item != dataList->end(); item++) {
+        if (item->first == NULL) {
+            return JNI_FALSE;
+        }
+        //注册native方法
+        if (env->RegisterNatives(clazz, item->first, NUM_METHOES(item->second)) < 0) {
+            return JNI_FALSE;
+        }
     }
     return JNI_TRUE;
 }
@@ -913,8 +1007,8 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     }
     assert(env != NULL);
 
-// 注册native方法
-    if (!registerMethods(env, JNIREG_CLASS, method_table, NUM_METHOES(method_table))) {
+    initNativeClassAMethod(env);
+    if (!registerMethods(env, &dynamicData)) {
         return JNI_ERR;
     }
 
@@ -922,4 +1016,3 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
 }
 
 /**------------------------------------- 动态注册 end -------------------------------------**/
-

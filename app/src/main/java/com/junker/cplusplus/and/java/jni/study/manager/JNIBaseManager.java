@@ -45,10 +45,7 @@ public class JNIBaseManager {
             System.loadLibrary("study");
             sIsLoadLibrarySuccess = true;
             Log.i(TAG, "system load so library success, libStudy.so");
-        } catch (UnsatisfiedLinkError e) {
-            sIsLoadLibrarySuccess = false;
-            Log.e(TAG, "system load so library failed, " + e.getMessage());
-        } catch (Exception e) {
+        } catch (UnsatisfiedLinkError | Exception e) {
             sIsLoadLibrarySuccess = false;
             Log.e(TAG, "system load so library failed, " + e.getMessage());
         }
@@ -156,6 +153,11 @@ public class JNIBaseManager {
     /**
      * 动态注册 native 方法
      */
-    public native String nativeDynamicRegisterMethod();
+    public native String nativeDynamicRegisterMethodOne();
+
+//    /**
+//     * 动态注册 native 方法
+//     */
+//    public native String nativeDynamicRegisterMethodTwo();
 
 }

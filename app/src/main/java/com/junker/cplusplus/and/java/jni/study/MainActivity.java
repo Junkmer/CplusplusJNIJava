@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.junker.cplusplus.and.java.jni.study.bean.DataBean;
 import com.junker.cplusplus.and.java.jni.study.databinding.ActivityMainBinding;
 import com.junker.cplusplus.and.java.jni.study.interfaces.ThreadCallBack;
+import com.junker.cplusplus.and.java.jni.study.manager.BaseCenter;
 import com.junker.cplusplus.and.java.jni.study.manager.JNIBaseManager;
 
 import java.util.ArrayList;
@@ -269,8 +270,11 @@ public class MainActivity extends AppCompatActivity {
                 });
                 break;
             case 16:// JNI动态注册
-                String context = JNIBaseManager.getInstance().nativeDynamicRegisterMethod();
+                String context = JNIBaseManager.getInstance().nativeDynamicRegisterMethodOne();
                 binding.sampleText.setText("nativeDynamicRegisterMethode = " + context);
+//                int number = BaseCenter.getInstance().nativeDynamicRegisterFirst(23);
+//                int number = BaseCenter.getInstance().getNumber();
+//                binding.sampleText.setText("nativeDynamicRegisterTwo = " + number);
                 break;
         }
     }
