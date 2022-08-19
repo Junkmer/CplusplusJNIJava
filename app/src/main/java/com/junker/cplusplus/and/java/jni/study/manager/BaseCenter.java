@@ -8,11 +8,10 @@ public class BaseCenter {
     }
 
     public static BaseCenter getInstance(){
+        if (!JNIBaseManager.getInstance().isInited()){
+            JNIBaseManager.getInstance().initSDK();
+        }
         return BaseCenter.BaseCenterHolder.baseCenter;
-    }
-
-    protected BaseCenter(){
-
     }
 
     private int number;
@@ -21,7 +20,7 @@ public class BaseCenter {
         return number;
     }
 
-//    public native int nativeDynamicRegisterFirst(int number);
-//
-//    public native void nativeDynamicRegisterSecond(int number);
+    public native int nativeDynamicRegisterFirst(int number);
+
+    public native void nativeDynamicRegisterSecond(int number);
 }

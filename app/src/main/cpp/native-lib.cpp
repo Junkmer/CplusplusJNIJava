@@ -932,67 +932,68 @@ Java_com_junker_cplusplus_and_java_jni_study_manager_JNIBaseManager_nativeThread
 /*--------------------------------------- 动态注册方式二 ---------------------------------------*/
 
 #include <map>
-
-#define NUM_METHOES(x) ((int) (sizeof(x) / sizeof((x)[0]))) //获取方法的数量
+#include <vector>
+#include <algorithm>
 
 jstring dynamicRegisterOne(JNIEnv *env) {
     std::string hello = "Hello from C++ One by 动态注册";
     return env->NewStringUTF(hello.c_str());
 }
 
-//jstring dynamicRegisterTwo(JNIEnv *env) {
-//    std::string hello = "Hello from C++ Two by 动态注册";
-//    return env->NewStringUTF(hello.c_str());
-//}
-//
-//jint registerFirst(JNIEnv *env,jint number) {
-////    jclass clazz = env->GetObjectClass(thiz);
-////    jclass clazz = env->FindClass("com/junker/cplusplus/and/java/jni/study/manager/BaseCenter");
-////    jfieldID fid = env->GetFieldID(clazz,"number", "I");
-////    env->SetIntField(thiz,fid,number);
-//    return number;
-//}
-//
-//void registerSecond(JNIEnv *env, int number) {
-//
-//}
+jstring dynamicRegisterTwo(JNIEnv *env) {
+    std::string hello = "Hello from C++ Two by 动态注册";
+    return env->NewStringUTF(hello.c_str());
+}
 
-static std::map<jclass,JNINativeMethod[]> dynamicData;
+jint registerFirst(JNIEnv *env, jobject thiz, jint number) {
+    jclass clazz = env->GetObjectClass(thiz);
+    jfieldID fid = env->GetFieldID(clazz, "number", "I");
+    env->SetIntField(thiz, fid, number);
+    jint num = env->GetIntField(thiz, fid);
+    return num;
+}
+
+void registerSecond(JNIEnv *env, jobject thiz, int number) {
+    jclass clazz = env->GetObjectClass(thiz);
+    jfieldID fid = env->GetFieldID(clazz, "number", "I");
+    env->SetIntField(thiz, fid, number+5);
+}
+
+static std::map<jclass, std::vector<JNINativeMethod>> dynamicDatas;
 
 #define JNIREG_Manager_CLASS "com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager"  //Java类的路径：包名+类名(下面是对应：类中的方法)
-static JNINativeMethod base_method_table[] = {
+static std::vector<JNINativeMethod> base_method_table = {
         // 第一个参数a 是java native方法名，
         // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
         // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
-        {"nativeDynamicRegisterMethodOne", "()Ljava/lang/String;", (jstring *) dynamicRegisterOne}
+        {"nativeDynamicRegisterMethodOne", "()Ljava/lang/String;", (jstring *) dynamicRegisterOne},
+        {"nativeDynamicRegisterMethodTwo", "()Ljava/lang/String;", (jstring *) dynamicRegisterTwo}
 };
 
-//#define JNIREG_Center_CLASS "com/junker/cplusplus/and/java/jni/study/manager/BaseCenter"  //Java类的路径：包名+类名(下面是对应：类中的方法)
-//static std::list<JNINativeMethod> center_method_table = {
-//        // 第一个参数a 是java native方法名，
-//        // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
-//        // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
-//        {"nativeDynamicRegisterFirst", "(I)I", (jint *) registerFirst},
-//        {"nativeDynamicRegisterSecond", "(I)", (void *) registerSecond}
-//};
+#define JNIREG_Center_CLASS "com/junker/cplusplus/and/java/jni/study/manager/BaseCenter"  //Java类的路径：包名+类名(下面是对应：类中的方法)
+static std::vector<JNINativeMethod> center_method_table = {
+        // 第一个参数a 是java native方法名，
+        // 第二个参数 是native方法参数,括号里面是传入参的类型，外边的是返回值类型，
+        // 第三个参数 是c/c++方法参数,括号里面是返回值类型，
+        {"nativeDynamicRegisterFirst",  "(I)I", (jint *) registerFirst},
+        {"nativeDynamicRegisterSecond", "(I)V", (void *) registerSecond}
+};
 
 void initNativeClassAMethod(JNIEnv *env) {
     jclass clazz_1 = env->FindClass(JNIREG_Manager_CLASS);
-    dynamicData.insert(std::pair<jclass, JNINativeMethod[]>(clazz_1, base_method_table));
-    dynamicData.insert(std::pair<jclass,JNINativeMethod[]>(clazz_1,base_method_table));
+    dynamicDatas.insert(std::pair<jclass, std::vector<JNINativeMethod>>(clazz_1, base_method_table));
 
-//    jclass clazz_2 = env->FindClass(JNIREG_Center_CLASS);
-//    dynamicData.insert(std::pair<jclass, std::list<JNINativeMethod>>(clazz_2, center_method_table));
+    jclass clazz_2 = env->FindClass(JNIREG_Center_CLASS);
+    dynamicDatas.insert(std::pair<jclass, std::vector<JNINativeMethod>>(clazz_2, center_method_table));
 }
 
-static int registerMethods(JNIEnv *env, std::map<jclass, JNINativeMethod[]> *dataList) {
-    jclass clazz = env->FindClass("com/junker/cplusplus/and/java/jni/study/manager/JNIBaseManager");
-    for (std::map<jclass, JNINativeMethod[]>::iterator item = dataList->begin(); item != dataList->end(); item++) {
+static int registerMethods(JNIEnv *env, std::map<jclass, std::vector<JNINativeMethod>> *dataList) {
+    for (auto item = dataList->begin(); item != dataList->end(); item++) {
         if (item->first == NULL) {
             return JNI_FALSE;
         }
         //注册native方法
-        if (env->RegisterNatives(clazz, item->first, NUM_METHOES(item->second)) < 0) {
+        if (env->RegisterNatives(item->first, &item->second[0], (int) item->second.size()) < 0) {
             return JNI_FALSE;
         }
     }
@@ -1008,7 +1009,7 @@ JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
     assert(env != NULL);
 
     initNativeClassAMethod(env);
-    if (!registerMethods(env, &dynamicData)) {
+    if (!registerMethods(env, &dynamicDatas)) {
         return JNI_ERR;
     }
 

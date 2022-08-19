@@ -270,9 +270,9 @@ public class MainActivity extends AppCompatActivity {
                 });
                 break;
             case 16:// JNI动态注册
-                String context = JNIBaseManager.getInstance().nativeDynamicRegisterMethodOne();
+                String context = JNIBaseManager.getInstance().nativeDynamicRegisterMethodTwo();
                 binding.sampleText.setText("nativeDynamicRegisterMethode = " + context);
-//                int number = BaseCenter.getInstance().nativeDynamicRegisterFirst(23);
+//                BaseCenter.getInstance().nativeDynamicRegisterSecond(23);
 //                int number = BaseCenter.getInstance().getNumber();
 //                binding.sampleText.setText("nativeDynamicRegisterTwo = " + number);
                 break;

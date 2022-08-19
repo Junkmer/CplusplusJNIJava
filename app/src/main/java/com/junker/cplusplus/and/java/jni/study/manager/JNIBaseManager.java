@@ -1,5 +1,6 @@
 package com.junker.cplusplus.and.java.jni.study.manager;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.junker.cplusplus.and.java.jni.study.bean.DataBean;
@@ -12,6 +13,8 @@ public class JNIBaseManager {
     private static final String TAG = JNIBaseManager.class.getSimpleName();
 
     private static boolean sIsLoadLibrarySuccess = false;
+
+    private boolean isInit;//是否初始化
 
     private int num;
     private char ch;
@@ -58,6 +61,25 @@ public class JNIBaseManager {
 
     public static JNIBaseManager getInstance() {
         return JNIBaseManager.JavaNativeMethodHolder.nativeMethod;
+    }
+
+    public boolean initSDK() {
+        if (false == sIsLoadLibrarySuccess) {
+            Log.e(TAG, "libimsdk.so is not loaded");
+            return false;
+        }
+
+        if (isInit) {
+            Log.w(TAG, "Has initSDK");
+            return true;
+        }
+
+        isInit = true;
+        return true;
+    }
+
+    public boolean isInited() {
+        return isInit;
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -155,9 +177,8 @@ public class JNIBaseManager {
      */
     public native String nativeDynamicRegisterMethodOne();
 
-//    /**
-//     * 动态注册 native 方法
-//     */
-//    public native String nativeDynamicRegisterMethodTwo();
-
+    /**
+     * 动态注册 native 方法
+     */
+    public native String nativeDynamicRegisterMethodTwo();
 }
